@@ -116,8 +116,8 @@ joint_pu = [JOINT[f"prop_U{U}_K4"]["snr"][snr_show]["cos"]
 thr = [U * c for U, c in zip(range(1, 7), per_user)]
 thr_j = [U * c for U, c in zip(range(1, 7), joint_pu)]
 xs = np.arange(1, 7)
-colors = ["#1a9641", "#2166ac", "#d95f02", "#d62728",
-          "#984ea3", "#666666"]
+# Single color per scheme so the bars match the legend patches.
+C_PROP = "#d62728"
 with open("fig_cl/cl_results_todma_u.json") as f:
     RT = json.load(f)
 todma_pu = [RT[f"todma_U{U}_T24_L128"][snr_show]["cos"] if U != 4
@@ -126,8 +126,8 @@ thr_t = [U * c for U, c in zip(range(1, 7), todma_pu)]
 ax2.bar([0], [conv_cos], width=0.55, color="#1a1a1a", alpha=0.85)
 ax2.text(0, conv_cos + 0.08, f"{conv_cos:.2f}", ha="center",
          va="bottom", fontsize=12)
-ax2.bar(xs - 0.27, thr, width=0.26, color=colors, alpha=0.9)
-ax2.bar(xs, thr_j, width=0.26, color=colors, alpha=0.4,
+ax2.bar(xs - 0.27, thr, width=0.26, color=C_PROP, alpha=0.9)
+ax2.bar(xs, thr_j, width=0.26, color=C_PROP, alpha=0.4,
         hatch="//", edgecolor="#555555", linewidth=0.5)
 ax2.bar(xs + 0.27, thr_t, width=0.26, color="#4393c3", alpha=0.75,
         hatch="..", edgecolor="#1f5f8b", linewidth=0.5)
@@ -145,9 +145,9 @@ ax2.set_ylabel(r"Aggregate fidelity ($U \!\cdot\! \mathrm{CosSim}$)",
                fontsize=16)
 ax2.grid(True, alpha=0.3, axis="y")
 ax2.set_ylim([0, max(thr) * 1.22])
-handles = [Patch(facecolor="#888888", label="Proposed"),
-           Patch(facecolor="#cccccc", hatch="//", edgecolor="#555555",
-                 label="Training w/o MAML [5]"),
+handles = [Patch(facecolor=C_PROP, alpha=0.9, label="Proposed"),
+           Patch(facecolor=C_PROP, alpha=0.4, hatch="//",
+                 edgecolor="#555555", label="Training w/o MAML [5]"),
            Patch(facecolor="#4393c3", alpha=0.75, hatch="..",
                  edgecolor="#1f5f8b", label="ToDMA $24\\times128$")]
 ax2.legend(handles=handles, fontsize=11, loc="center left",
