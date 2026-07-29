@@ -70,16 +70,6 @@ cosine similarity with a Pearson correlation of **r = 0.903**:
 
 ![Probe accuracy vs. cosine similarity](fig_cl/probe_vs_cosine.png)
 
-| Scheme | CosSim 5 dB | Acc 5 dB | CosSim 20 dB | Acc 20 dB |
-|---|---|---|---|---|
-| Proposed (MAML) | 0.848 | 0.805 | 0.943 | 0.839 |
-| Joint training (JSAC) | 0.818 | 0.770 | 0.911 | 0.823 |
-| Random-projection mask (MAML) | 0.841 | 0.788 | 0.938 | 0.834 |
-| Conventional orthogonal (MAML) | 0.861 | 0.844 | 0.951 | 0.850 |
-| Conventional orthogonal (joint) | 0.837 | 0.808 | 0.931 | 0.830 |
-| Random-projection mask (joint) | 0.811 | 0.795 | 0.910 | 0.841 |
-| ToDMA 24x128 | 0.772 | 0.762 | 0.939 | 0.856 |
-
 Two readings follow. First, the low-SNR advantage of the analog
 embedding schemes over the token-domain scheme appears in both metrics
 (for example 0.848 vs. 0.772 in CosSim and 0.805 vs. 0.762 in accuracy
