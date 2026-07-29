@@ -34,7 +34,7 @@ def sweep_pairs(entry, todma=False):
 
 SCHEMES = [
     ("Proposed (MAML)", RM["mamlP_U4_K4"], False, "v", "#d62728"),
-    ("Joint training [5]", RJ["prop_U4_K4"], False, "x", "#8c564b"),
+    ("Training w/o MAML [5]", RJ["prop_U4_K4"], False, "x", "#8c564b"),
     ("Random-projection mask (MAML)", RM["mamlR_U4_K4"], False, "s",
      "#984ea3"),
     ("Conventional orthogonal (MAML)", RM["mamlB_U1_K1"], False, "o",
@@ -88,4 +88,5 @@ for lab, entry, todma, _, _ in SCHEMES:
     c5, a5 = get("5")
     c20, a20 = get("20")
     print(f"| {lab} | {c5:.3f} | {a5:.3f} | {c20:.3f} | {a20:.3f} |")
+
 

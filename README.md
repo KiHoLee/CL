@@ -8,7 +8,7 @@ Multiple users share one expanded embedding block of dimension
 `d_s = K * d_b`: each user's frozen BERT sentence embedding is projected
 into the shared space, superimposed through learnable masks, and
 demultiplexed by user-wise attention. All reported transceivers are
-trained with SNR-aware MAML; the joint multi-SNR training of the earlier
+trained with SNR-aware MAML; the training without MAML of the earlier
 JSAC paper is included as a prior-art reference.
 
 ## Files

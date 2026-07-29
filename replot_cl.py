@@ -73,7 +73,7 @@ curves = [
     ("prop_U2_K4", "Proposed $U$=2", "^", "-", "#2166ac", 2),
     ("prop_U3_K4", "Proposed $U$=3", "D", "-", "#d95f02", 2),
     ("prop_U4_K4", "Proposed $U$=4", "v", "-", "#d62728", 2.5),
-    ("JOINT:prop_U4_K4", "Joint training [5]", "x",
+    ("JOINT:prop_U4_K4", "Training w/o MAML [5]", "x",
      (0, (5, 2)), "#8c564b", 2),
     ("baseline_U1_K1", "Conventional orthogonal", "o", "--", "#1a1a1a", 2),
     ("randmask_U4_K4", "Random-projection mask", "s", "-.", "#984ea3", 2),
@@ -118,15 +118,22 @@ thr_j = [U * c for U, c in zip(range(1, 7), joint_pu)]
 xs = np.arange(1, 7)
 colors = ["#1a9641", "#2166ac", "#d95f02", "#d62728",
           "#984ea3", "#666666"]
+with open("fig_cl/cl_results_todma_u.json") as f:
+    RT = json.load(f)
+todma_pu = [RT[f"todma_U{U}_T24_L128"]["20"]["cos"] if U != 4
+            else R["todma_T24_L128"]["20"]["cos"] for U in range(1, 7)]
+thr_t = [U * c for U, c in zip(range(1, 7), todma_pu)]
 ax2.bar([0], [conv_cos], width=0.55, color="#1a1a1a", alpha=0.85)
 ax2.text(0, conv_cos + 0.08, f"{conv_cos:.2f}", ha="center",
          va="bottom", fontsize=12)
-ax2.bar(xs - 0.20, thr, width=0.4, color=colors, alpha=0.9)
-ax2.bar(xs + 0.20, thr_j, width=0.4, color=colors, alpha=0.4,
+ax2.bar(xs - 0.27, thr, width=0.26, color=colors, alpha=0.9)
+ax2.bar(xs, thr_j, width=0.26, color=colors, alpha=0.4,
         hatch="//", edgecolor="#555555", linewidth=0.5)
+ax2.bar(xs + 0.27, thr_t, width=0.26, color="#4393c3", alpha=0.75,
+        hatch="..", edgecolor="#1f5f8b", linewidth=0.5)
 for x, val in zip(xs, thr):
-    ax2.text(x - 0.20, val + 0.08, f"{val:.2f}", ha="center",
-             va="bottom", fontsize=12)
+    ax2.text(x - 0.27, val + 0.08, f"{val:.2f}", ha="center",
+             va="bottom", fontsize=11)
 # Fully loaded orthogonal aggregate (4 blocks x 768 uses = same budget)
 ax2.axhline(4 * conv_cos, linestyle="-.", color="#555555", linewidth=2)
 ax2.text(-0.45, 4 * conv_cos + 0.13, "Fully loaded orthogonal",
@@ -145,18 +152,12 @@ h_per, = ax2r.plot([0] + list(xs), [conv_cos] + per_user, marker="o",
 ax2r.set_ylabel("Per-user CosSim", fontsize=16)
 ax2r.set_ylim([0.80, 1.0])
 ax2r.set_yticks([0.80, 0.85, 0.90, 0.95, 1.00])
-# ToDMA aggregate across load (evaluation-only sweep, same budget)
-with open("fig_cl/cl_results_todma_u.json") as f:
-    RT = json.load(f)
-todma_pu = [RT[f"todma_U{U}_T24_L128"]["20"]["cos"] if U != 4
-            else R["todma_T24_L128"]["20"]["cos"] for U in range(1, 7)]
-h_td, = ax2.plot(xs, [U * c for U, c in zip(range(1, 7), todma_pu)],
-                 marker="^", linestyle=":", color="#4393c3",
-                 linewidth=2, markersize=8,
-                 label="ToDMA $24\\times128$")
 handles = [Patch(facecolor="#888888", label="Proposed"),
            Patch(facecolor="#cccccc", hatch="//", edgecolor="#555555",
-                 label="Joint training [5]"), h_td, h_per]
+                 label="Training w/o MAML [5]"),
+           Patch(facecolor="#4393c3", alpha=0.75, hatch="..",
+                 edgecolor="#1f5f8b", label="ToDMA $24\\times128$"),
+           h_per]
 ax2r.legend(handles=handles, fontsize=10.5, loc="center left",
             bbox_to_anchor=(0.02, 0.44))
 fig.savefig("fig_cl/cl_fig_agg.pdf", dpi=200)
@@ -184,5 +185,6 @@ for k in ["ksweep_U4_K1", "ksweep_U4_K2", "prop_U4_K4", "ksweep_U4_K8"]:
           "20dB:", round(R[k]["snr"]["20"]["cos"], 3))
 if "mamlD_U4_K4" in R:
     print("distil(MAML)@20:", round(R["mamlD_U4_K4"]["snr"]["20"]["cos"], 3))
+
 
 
