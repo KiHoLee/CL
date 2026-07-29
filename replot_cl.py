@@ -132,7 +132,7 @@ ax2.axhline(4 * conv_cos, linestyle="-.", color="#555555", linewidth=2)
 ax2.text(-0.45, 4 * conv_cos + 0.13, "Fully loaded orthogonal",
          fontsize=12.5, color="#555555")
 ax2.set_xticks([0] + list(xs))
-ax2.set_xticklabels(["Conv.\n$U$=1"] + [f"Prop.\n$U$={U}"
+ax2.set_xticklabels(["Conv.\n$U$=1"] + [f"Multi.\n$U$={U}"
                     for U in range(1, 7)], fontsize=12)
 ax2.set_ylabel(r"Aggregate fidelity ($U \!\cdot\! \mathrm{CosSim}$)",
                fontsize=16)
@@ -145,11 +145,20 @@ h_per, = ax2r.plot([0] + list(xs), [conv_cos] + per_user, marker="o",
 ax2r.set_ylabel("Per-user CosSim", fontsize=16)
 ax2r.set_ylim([0.80, 1.0])
 ax2r.set_yticks([0.80, 0.85, 0.90, 0.95, 1.00])
-handles = [Patch(facecolor="#888888", label="SNR-aware MAML"),
+# ToDMA aggregate across load (evaluation-only sweep, same budget)
+with open("fig_cl/cl_results_todma_u.json") as f:
+    RT = json.load(f)
+todma_pu = [RT[f"todma_U{U}_T24_L128"]["20"]["cos"] if U != 4
+            else R["todma_T24_L128"]["20"]["cos"] for U in range(1, 7)]
+h_td, = ax2.plot(xs, [U * c for U, c in zip(range(1, 7), todma_pu)],
+                 marker="^", linestyle=":", color="#4393c3",
+                 linewidth=2, markersize=8,
+                 label="ToDMA $24\\times128$")
+handles = [Patch(facecolor="#888888", label="Proposed"),
            Patch(facecolor="#cccccc", hatch="//", edgecolor="#555555",
-                 label="Joint training [5]"), h_per]
-ax2r.legend(handles=handles, fontsize=11, loc="center left",
-            bbox_to_anchor=(0.02, 0.45))
+                 label="Joint training [5]"), h_td, h_per]
+ax2r.legend(handles=handles, fontsize=10.5, loc="center left",
+            bbox_to_anchor=(0.02, 0.44))
 fig.savefig("fig_cl/cl_fig_agg.pdf", dpi=200)
 fig.savefig("fig_cl/cl_fig_agg.png", dpi=150)
 plt.close(fig)
