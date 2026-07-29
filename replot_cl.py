@@ -145,21 +145,13 @@ ax2.set_ylabel(r"Aggregate fidelity ($U \!\cdot\! \mathrm{CosSim}$)",
                fontsize=16)
 ax2.grid(True, alpha=0.3, axis="y")
 ax2.set_ylim([0, max(thr) * 1.22])
-ax2r = ax2.twinx()
-h_per, = ax2r.plot([0] + list(xs), [conv_cos] + per_user, marker="o",
-                   color="#1a1a1a", linewidth=2, markersize=7,
-                   linestyle="--", label="Per-user CosSim")
-ax2r.set_ylabel("Per-user CosSim", fontsize=16)
-ax2r.set_ylim([0.80, 1.0])
-ax2r.set_yticks([0.80, 0.85, 0.90, 0.95, 1.00])
 handles = [Patch(facecolor="#888888", label="Proposed"),
            Patch(facecolor="#cccccc", hatch="//", edgecolor="#555555",
                  label="Training w/o MAML [5]"),
            Patch(facecolor="#4393c3", alpha=0.75, hatch="..",
-                 edgecolor="#1f5f8b", label="ToDMA $24\\times128$"),
-           h_per]
-ax2r.legend(handles=handles, fontsize=10.5, loc="center left",
-            bbox_to_anchor=(0.02, 0.44))
+                 edgecolor="#1f5f8b", label="ToDMA $24\\times128$")]
+ax2.legend(handles=handles, fontsize=11, loc="center left",
+           bbox_to_anchor=(0.02, 0.44))
 fig.savefig("fig_cl/cl_fig_agg.pdf", dpi=200)
 fig.savefig("fig_cl/cl_fig_agg.png", dpi=150)
 plt.close(fig)
