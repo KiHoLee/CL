@@ -8,7 +8,7 @@
 #   Fig. 2 (cl_fig_mux.pdf)   : one SNR sweep merging the load sweep
 #                               (conventional + proposed U=1..4) and the
 #                               matched-budget comparison (random mask,
-#                               ToDMA-style x2) at U=4.
+#                               ToDMA x2) at U=4.
 #   Fig. 3 (cl_fig_agg.pdf)   : aggregate fidelity bars for U=1..6 with
 #                               per-user CosSim and the fully loaded
 #                               orthogonal reference.
@@ -77,9 +77,9 @@ curves = [
      (0, (5, 2)), "#8c564b", 2),
     ("baseline_U1_K1", "Conventional orthogonal", "o", "--", "#1a1a1a", 2),
     ("randmask_U4_K4", "Random-projection mask", "s", "-.", "#984ea3", 2),
-    ("todma_T24_L128", "ToDMA-style $24\\times128$", "^", ":",
+    ("todma_T24_L128", "ToDMA $24\\times128$", "^", ":",
      "#4393c3", 2),
-    ("todma_T16_L192", "ToDMA-style $16\\times192$", "D", ":",
+    ("todma_T16_L192", "ToDMA $16\\times192$", "D", ":",
      "#92c5de", 2),
 ]
 for key, lab, mk, ls, col, lw in curves:
@@ -97,6 +97,7 @@ ax.set_ylim([0.45, 1.0])
 ax.legend(fontsize=12.5, loc="lower right", ncol=1)
 ax.grid(True, alpha=0.3)
 fig.savefig("fig_cl/cl_fig_mux.pdf", dpi=200)
+fig.savefig("fig_cl/cl_fig_mux.png", dpi=150)
 plt.close(fig)
 print("Saved cl_fig_mux.pdf")
 
@@ -147,9 +148,10 @@ ax2r.set_yticks([0.80, 0.85, 0.90, 0.95, 1.00])
 handles = [Patch(facecolor="#888888", label="SNR-aware MAML"),
            Patch(facecolor="#cccccc", hatch="//", edgecolor="#555555",
                  label="Joint training [5]"), h_per]
-ax2r.legend(handles=handles, fontsize=12, loc="center left",
-            bbox_to_anchor=(0.02, 0.40))
+ax2r.legend(handles=handles, fontsize=11, loc="center left",
+            bbox_to_anchor=(0.02, 0.45))
 fig.savefig("fig_cl/cl_fig_agg.pdf", dpi=200)
+fig.savefig("fig_cl/cl_fig_agg.png", dpi=150)
 plt.close(fig)
 print("Saved cl_fig_agg.pdf")
 
@@ -173,4 +175,5 @@ for k in ["ksweep_U4_K1", "ksweep_U4_K2", "prop_U4_K4", "ksweep_U4_K8"]:
           "20dB:", round(R[k]["snr"]["20"]["cos"], 3))
 if "mamlD_U4_K4" in R:
     print("distil(MAML)@20:", round(R["mamlD_U4_K4"]["snr"]["20"]["cos"], 3))
+
 
