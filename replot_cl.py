@@ -108,7 +108,7 @@ fig, ax2 = one_panel()
 
 from matplotlib.patches import Patch
 
-snr_show = "20"
+snr_show = "10"
 conv_cos = R["baseline_U1_K1"]["snr"][snr_show]["cos"]
 per_user = [R[f"prop_U{U}_K4"]["snr"][snr_show]["cos"] for U in range(1, 7)]
 joint_pu = [JOINT[f"prop_U{U}_K4"]["snr"][snr_show]["cos"]
@@ -120,8 +120,8 @@ colors = ["#1a9641", "#2166ac", "#d95f02", "#d62728",
           "#984ea3", "#666666"]
 with open("fig_cl/cl_results_todma_u.json") as f:
     RT = json.load(f)
-todma_pu = [RT[f"todma_U{U}_T24_L128"]["20"]["cos"] if U != 4
-            else R["todma_T24_L128"]["20"]["cos"] for U in range(1, 7)]
+todma_pu = [RT[f"todma_U{U}_T24_L128"][snr_show]["cos"] if U != 4
+            else R["todma_T24_L128"][snr_show]["cos"] for U in range(1, 7)]
 thr_t = [U * c for U, c in zip(range(1, 7), todma_pu)]
 ax2.bar([0], [conv_cos], width=0.55, color="#1a1a1a", alpha=0.85)
 ax2.text(0, conv_cos + 0.08, f"{conv_cos:.2f}", ha="center",
@@ -185,6 +185,7 @@ for k in ["ksweep_U4_K1", "ksweep_U4_K2", "prop_U4_K4", "ksweep_U4_K8"]:
           "20dB:", round(R[k]["snr"]["20"]["cos"], 3))
 if "mamlD_U4_K4" in R:
     print("distil(MAML)@20:", round(R["mamlD_U4_K4"]["snr"]["20"]["cos"], 3))
+
 
 
 
