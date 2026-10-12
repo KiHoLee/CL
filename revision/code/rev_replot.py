@@ -25,10 +25,10 @@ FIG = os.path.join(ROOT, "fig_cl")
 OLD = os.path.join(HERE, "fig_cl")        # ToDMA results of the submission
 SNRS = [0, 5, 10, 15, 20, 25, 30]
 
-plt.rcParams.update({"font.size": 15, "axes.linewidth": 1.2})
+plt.rcParams.update({"font.size": 20, "axes.linewidth": 1.2})
 FIGSIZE = (7.5, 5.55)
-AX_RECT = [0.115, 0.115, 0.76, 0.7804]       # 6.0 x 4.5 in axes box (8:6)
-MS = 8
+AX_RECT = [0.155, 0.14, 0.76, 0.7804]       # 6.0 x 4.5 in axes box (8:6)
+MS = 9
 
 # one style per scheme, every figure (standard 9.1)
 STYLE = {
@@ -38,7 +38,7 @@ STYLE = {
     "static": dict(label="Static orthogonal ($K$ blocks)", color="#7f7f7f", marker="s", ls="--"),
     "fixed6": dict(label="Fixed six-way orthogonal partition", color="#bdbdbd", marker="D", ls="--"),
     "rand":   dict(label="Random-projection mask", color="#984ea3", marker="s", ls="-."),
-    "joint":  dict(label="Training w/o MAML", color="#8c564b", marker="x", ls=(0, (5, 2))),
+    "joint":  dict(label="Training without MAML", color="#8c564b", marker="x", ls=(0, (5, 2))),
     "todma":  dict(label="ToDMA $24\\times128$", color="#4393c3", marker="^", ls=":"),
 }
 ORDER = ["prop", "agn", "ods", "static", "fixed6", "rand", "joint", "todma"]
@@ -129,14 +129,14 @@ def fig2():
                 linestyle=st["ls"], linewidth=2, markersize=MS)
     except FileNotFoundError:
         pass
-    ax.set_xlabel("SNR (dB)", fontsize=17)
-    ax.set_ylabel("Per-user CosSim", fontsize=17)
+    ax.set_xlabel("SNR (dB)", fontsize=22)
+    ax.set_ylabel("Per-user CosSim", fontsize=22)
     ax.set_ylim([0.45, 1.0])
     ax.grid(True, alpha=0.3)
     handles, labels = ax.get_legend_handles_labels()
     rank = {STYLE[k]["label"]: i for i, k in enumerate(ORDER)}
     hl = sorted(zip(handles, labels), key=lambda x: rank.get(x[1], 99))
-    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=12.5, loc="lower right")
+    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=16.5, loc="lower right")
     save(fig, ax, os.path.join(FIG, "fig2_snr_rev.pdf"), leg)
 
 
@@ -191,16 +191,16 @@ def fig3(snr=10):
                 linestyle=st["ls"], linewidth=2, markersize=MS)
     except FileNotFoundError:
         pass
-    ax.set_xlabel("Number of users $U$", fontsize=17)
-    ax.set_ylabel("Per-user CosSim", fontsize=17)
+    ax.set_xlabel("Number of users $U$", fontsize=22)
+    ax.set_ylabel("Per-user CosSim", fontsize=22)
     ax.set_xticks(Us)
-    ax.set_ylim([0.82, 1.07])
+    ax.set_ylim([0.82, 1.17])
     ax.set_yticks(np.arange(0.84, 1.001, 0.04))
     ax.grid(True, alpha=0.3)
     handles, labels = ax.get_legend_handles_labels()
     rank = {STYLE[k]["label"]: j for j, k in enumerate(ORDER)}
     hl = sorted(zip(handles, labels), key=lambda x: rank.get(x[1], 99))
-    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=12.5, loc="upper right")
+    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=16.5, loc="upper right")
     save(fig, ax, os.path.join(FIG, "fig3_load_rev.pdf"), leg)
 
 
