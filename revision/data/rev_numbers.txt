@@ -1,0 +1,102 @@
+ABSWORDS     100
+AGN          0.017
+AGNU1        0.017
+AGNU6        0.005
+CAGN         0.017
+CGAP         at most 0.008
+COVAGN       0.017
+COVGAP       at most 0.008
+ED1          Both reviewers asked for an orthogonal reference that serves all users over the same resource. The new orthogonal dimension sharing scheme does so at every load with the same energy per user, and against it the shared block trails by at most 0.008 in per-user cosine similarity (Comments~1.1, 1.2, 2.2, and~2.3). The $1.45\times$ overload gain of the submitted letter is withdrawn, the title is changed, and no per-channel-use gain over re-partitioned orthogonal access is claimed.
+ED2          Each user now normalizes its own signal to the energy $d_s/U$ and transmits over its own independent Rayleigh channel with phase pre-compensation (Comments~1.3 and~1.4). All experiments were rerun under this model, and residual phase error, near-far offsets, and common fading are reported (Comment~2.6).
+ED3          A decomposition and measurements inside the receiver show that the separation is carried by a learned user-specific linear decoder in the expanded space, with the masks as user signatures, which explains the random-projection result and states when mask learning matters (Comments~1.5 and~2.4).
+ED4          One transceiver trained over random active subsets serves every load from one user to overload within 0.017 of the per-load transceivers, which the orthogonal scheme cannot do without re-partitioning and retraining (Comment~1.6). This is the gain the letter now claims.
+ED5          Ablations over $K$, $U$ up to $16$, the training SNR range, and the meta-learning configuration, a second dataset and task, DistilBERT, three seeds with error bars, and $2{,}000$ frames per point are added (Comments~2.5, 2.7, and~2.8), and the novelty over the earlier framework is stated component by component (Comment~2.1).
+ED6          One expanded shared block with learned masks, user-wise attention, and user-specific decoders carries the BERT embeddings of one to six users with one trained transceiver, within 0.017 of per-load training and within at most 0.008 of orthogonal access re-partitioned for each load, exceeds static block allocation at partial load, serves the overload that static allocation cannot, and does so because the low effective dimension of the embeddings lets a linear decoder separate the users in the expanded space.
+EFFRANK      209 to 556
+F2AGN        0.005
+F2GAP        0.006
+F2GAP10      0.004
+F2GAP20      0.005
+F2SPREAD     0.0007
+F3AGN        0.013
+F3FIXED1     0.046
+F3FIXED3     0.022
+F3FIXED6     0.004
+F3ODSGAP     0.4
+F3STATIC     0.039
+GAP4         0.005
+GAP6         0.008
+LAT          5.6
+LATDEV       mps
+LATODS       2.3
+LATTODMA     69.2
+PAGG         4.93 and 4.96 sentences
+PAGN         0.848
+PARAMS       11.8
+PARAMSRX     9.4
+PCLEAN       0.855
+PDIFF        at most 0.003
+PEARSON      0.99
+PODS         0.846
+PPROP        0.844
+R11NUM       The table gives the aggregate fidelity per block of $3072$ channel uses at $10$\,dB for every load, with the deficit of the proposal relative to ODS in the last column (seed means, \texttt{data/rev\_summary.csv}).
+R11TASK      The correlation is 0.99 over 49 scheme-SNR points, and at $U\!=\!6$ and $10$\,dB the proposal and ODS deliver 4.93 and 4.96 sentences with correct topic per block.
+R12NUM       The table gives the per-user cosine similarity at $10$ and $20$\,dB for the proposal trained per load, for the single load-agnostic model, and for ODS, as seed mean and standard deviation over three seeds.
+R13NUM       Under the revised normalization and independent fading, the proposal reaches a per-user cosine similarity of 0.973 at full load and $20$\,dB against 0.978 for the energy-matched orthogonal reference (Comment~1.2).
+R14COMMONDIFF 0.000
+R14NFW       0.022
+R14NFWODS    0.019
+R14NUM       Under common fading the proposal reaches 0.974 at $20$\,dB against 0.974 under independent fading, while ODS is unaffected (0.978 against 0.978).
+R14PILOT     In a pilot of $40$ epochs with the shared decoder of the submitted letter (\texttt{data/pilot/}), the full-load fidelity at $20$\,dB was 0.955 under common fading but 0.935 under independent fading, against 0.971 for ODS.
+R15DEC       The table reproduces Table~II of the revised manuscript (single runs, seed 1; the main model is the seed-1 run of the three-seed mean).
+R15EFF       209
+R15K1        0.018
+R15RANDGAP   0.017
+R15SIRR      3.3\,dB
+R15SIRRX     15.0\,dB
+R15SIRZ      2.5\,dB
+R15SWAP      cosine similarity 0.16 against 0.928
+R15U6        0.024
+R16NUM       The table of Comment~1.2 lists the single model next to the per-load models. Its largest deviation from the per-load models over all loads and both SNRs is 0.017, and at $U\!=\!6$ and $20$\,dB it reaches 0.964 against 0.959 for the model trained for six users.
+R21NUM       The user-specific reverse projection alone improves the full-load fidelity at $20$\,dB by 0.014 over a shared one (Table~II), and the load-agnostic training is what allows one model to serve all loads within 0.017.
+R22NUM       The correlation is 0.99 over 49 scheme-SNR points, and at $U\!=\!6$ and $10$\,dB the proposal and ODS deliver 4.93 and 4.96 sentences with correct topic per block.
+R23NUM       At $U\!=\!1$, $2$, and $3$ the proposal reaches 0.991, 0.985, 0.979 at $20$\,dB against 0.991, 0.987, 0.982 for ODS with the same $d_s/U$ dimensions per user, and against 0.978 for a static single-user block of $d_b$ dimensions.
+R24NUM       At $K\!=\!4$ and $U\!=\!4$ random masks cost 0.017 at $20$\,dB, at $K\!=\!1$ they cost 0.018, and at $U\!=\!6$ they cost 0.024 (Table~II).
+R25K         Per-user fidelity at $0$ / $10$ / $20$\,dB is 0.615 / 0.843 / 0.907 at $K\!=\!1$, 0.683 / 0.896 / 0.951 at $K\!=\!2$, 0.750 / 0.928 / 0.974 at $K\!=\!4$, and 0.816 / 0.955 / 0.984 at $K\!=\!8$.
+R25MAML      The rows of Table~II give 0.748 / 0.930 / 0.974 for $\alpha\!=\!10^{-4}$, 0.748 / 0.930 / 0.974 for $\alpha\!=\!2\!\times\!10^{-3}$, 0.748 / 0.928 / 0.971 for a meta-batch of two, 0.752 / 0.931 / 0.974 for six, 0.749 / 0.930 / 0.974 for three inner steps, 0.750 / 0.928 / 0.974 without the adaptation step, and 0.757 / 0.924 / 0.962 for joint training without meta-learning.
+R25SNR       Trained on $\{0,5,10\}$\,dB only, the model reaches 0.772 / 0.918 / 0.949 at $0$ / $10$ / $20$\,dB, and trained on $\{15,20,25\}$\,dB only, 0.717 / 0.930 / 0.985, against 0.750 / 0.928 / 0.974 for the full range.
+R25U         At $U\!=\!8$, $12$, and $16$ the proposal reaches 0.945, 0.890, 0.859 at $20$\,dB against 0.955, 0.932, 0.911 for ODS.
+R26COMMON    Under common fading the proposal reaches 0.974 at $20$\,dB against 0.974 under independent fading, while ODS is unaffected (0.978 against 0.978).
+R26NF        The table below reproduces the robustness rows of Table~III.
+R26PHASE     At $20$\,dB the proposal loses 0.000, 0.002, 0.011 for the three error levels and ODS loses 0.000, 0.001, 0.009.
+R27DISTIL    With DistilBERT the proposal reaches 0.977 against 0.980 for ODS at $20$\,dB.
+R27SST       On SST-2 the proposal reaches 0.973 and 0.958 at $U\!=\!4$ and $6$ and $20$\,dB against 0.978 and 0.965 for ODS, with sentiment-probe accuracies of 0.855 and 0.855 at $U\!=\!4$ against 0.860 on clean embeddings.
+R28NUM       Over the $36$ seed triples of the main stage the seed standard deviation ranges from 0.0000 to 0.0016 (\texttt{data/rev\_summary.csv}).
+SUMAGN       0.017
+SUMGAP       at most 0.008
+T2ADAPT      less than 0.001
+T2CFG        0.003
+T2K1         0.615
+T2K1RAND     0.018
+T2K48        0.010
+T2K8         0.816
+T2MAML       0.012 at 20\,dB
+T2NOATT      0.001
+T2RAND       0.017 at 20\,dB
+T2RANDBOTH   0.083
+T2RANDTX     0.053
+T2RANGE      0.033 at the far end of the range
+T2RANGEGAIN  0.022
+T2SHRX       0.014
+T2U6RAND     0.024
+T3COMMON     0.000
+T3DISTIL     0.977 against 0.980 for ODS at 20\,dB
+T3NF         0.001 and 0.004
+T3NFGAP      0.006 at $\pm6$\,dB and 20\,dB
+T3NFW        0.008 and 0.022
+T3PHASE      0.000, 0.002, 0.011
+T3PHASEODS   0.002
+T3SCALE      0.945, 0.890, 0.859
+T3SCALEODS   0.955, 0.932, 0.911
+T3SST        0.973 against 0.978 at $U\!=\!4$ and 20\,dB
+T3SSTP       0.855 against 0.855 (clean 0.860)

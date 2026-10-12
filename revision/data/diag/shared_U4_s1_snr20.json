@@ -1,0 +1,19 @@
+{
+ "name": "shared_U4",
+ "seed": 1,
+ "snr": 20.0,
+ "mask_stats": {
+  "max_abs_offdiag": 0.3197229206562042,
+  "mean_abs_offdiag": 0.2921207199494044,
+  "support_overlap_mean": 0.3805268506209056,
+  "support_overlap_max": 0.4806828200817108
+ },
+ "sir_r": 2.15804,
+ "snr_r": 117.41789,
+ "attn_own": 0.9705,
+ "sir_z": 1.80464,
+ "sir_after_rx": 32.00071,
+ "cos": 0.97356,
+ "cos_random_masks_at_test": 0.1579,
+ "cos_no_attention_at_test": 0.97373
+}

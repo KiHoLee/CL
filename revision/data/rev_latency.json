@@ -1,0 +1,22 @@
+{
+ "device": "mps",
+ "torch": "2.5.1",
+ "shared_U4_s1": {
+  "ms_per_frame": 5.592206319173177,
+  "params": 11839488,
+  "params_rx": 9446400,
+  "U": 4
+ },
+ "ortho_U4_s1": {
+  "ms_per_frame": 2.2890877723693848,
+  "params": 1184256,
+  "params_rx": 592128,
+  "U": 4
+ },
+ "shared_agn_s1": {
+  "ms_per_frame": 5.709753036499023,
+  "params": 16571904,
+  "params_rx": 14166528,
+  "U": 6
+ }
+}

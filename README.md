@@ -102,3 +102,59 @@ repository together with the earlier shared-embedding paper:
 > K.-H. Lee, H.-H. Choi, and J.-R. Lee, "Transformer-based shared
 > embedding for multiple access in semantic communications," *IEEE J.
 > Sel. Areas Commun.*, vol. 44, pp. 2622-2637, 2026.
+
+## Revision (IEEE Communications Letters, resubmission of CL2026-2366, October 2026)
+
+Everything behind the revised letter *Load-Agnostic Semantic Multiplexing of BERT
+Embeddings in an Expanded Shared Block* lives in `revision/`. The revised
+system model has per-user power normalization (every user scales its own masked
+signal to the block energy `d_s/U`) and independent Rayleigh fading per user
+with phase pre-compensation; the receiver uses a user-specific reverse
+projection; training is first-order SNR-aware MAML batched over 64 frames
+(150 epochs x 100 steps, meta-batch 4, alpha 5e-4, Adam 1e-3), and every
+reported point is evaluated after one inner step on 2,000 held-out frames.
+
+### Layout
+
+| Path | Content |
+|---|---|
+| `revision/code/rev_lib.py` | shared library: data split and embedding cache, `SharedMux` (proposal) and `OrthoDS` (orthogonal dimension sharing), channel, MAML training, adaptation and evaluation, diagnostics |
+| `revision/code/rev_run.py` | trains and evaluates one configuration, writes `data/<name>_s<seed>.json` and a checkpoint |
+| `revision/code/rev_queue.sh` | every run of the letter grouped by figure/table: `main`, `main_ortho`, `ortho_s3`, `scale`, `decomp`/`decomp_a`/`decomp_b`, `ablate`/`ablate_b`, `general` |
+| `revision/code/rev_cache.py` | builds the embedding caches (`data/emb_*.pt`, not stored here; regenerated from AG News, SST-2, BERT-base, DistilBERT) |
+| `revision/code/rev_collect.py` | summarizes all JSON results into `data/rev_summary.csv` and prints the tables |
+| `revision/code/rev_replot.py` | regenerates Fig. 2 and Fig. 3 from `data/` only |
+| `revision/code/rev_diag.py` | receiver diagnostics of a checkpoint (SIR before/after attention and decoder, random masks at test time) |
+| `revision/code/rev_latency.py` | per-frame latency of the stored checkpoints on one device |
+| `revision/code/rev_pilot*.sh` | pilot runs that fixed the budget and the receiver design (`data/pilot/`) |
+| `revision/data/*.json` | one file per run (76 runs): config, per-SNR per-user CosSim, worst user, probe accuracy, robustness evaluations, mask statistics |
+| `revision/data/rev_summary.csv`, `rev_results_table.txt`, `rev_numbers.txt` | aggregated tables and every number quoted in the letter |
+| `revision/data/diag/`, `revision/data/rev_latency.json` | diagnostics of the seed-1 full-load model and latency measurements |
+| `revision/ckpt/` | seed-1 checkpoints of the proposal at U=4, the load-agnostic model, and ODS at U=4 |
+| `revision/fig_cl/` | Fig. 1 (TikZ output), Fig. 2 and Fig. 3 of the revised letter |
+
+### Figure and table map
+
+| Item | Runs | Script |
+|---|---|---|
+| Fig. 2 | `shared_U4_s{1,2,3}`, `shared_agn_s{1,2,3}`, `ortho_U4_s{1,2,3}`, `shared_U4_randmask_s1`, `shared_U4_joint_s1`, ToDMA from `code/fig_cl/cl_results.json` | `rev_replot.py` |
+| Fig. 3 | `shared_U{1..6}_s{1,2,3}`, `shared_agn_s{1,2,3}`, `ortho_U{1..6}_s{1,2,3}`, ToDMA load sweep | `rev_replot.py` |
+| Table II | `shared_U4_{randmask,randtx,randboth,noattn,sharedrx}_s1`, `shared_U4_K{1,2,8}_s1`, `shared_U4_K1_randmask_s1`, `shared_U6_{randmask}_s1`, `shared_U4_joint_s1`, `shared_U4_tr{low,high}_s1` | `rev_collect.py` |
+| Table III | `robust` blocks of `shared_U4_s1` and `ortho_U4_s1`, `sst2_*`, `distil_*`, `shared_U{8,12,16}_s1`, `ortho_U{8,12,16}_s1` | `rev_collect.py` |
+
+### Reproduction
+
+```bash
+cd revision/code
+python rev_cache.py                       # embedding caches (needs transformers, datasets)
+EXTRA="--per-user-rx" EP=150 BS=64 N_PAR=3 bash rev_queue.sh main
+EXTRA="--per-user-rx" EP=150 BS=64 N_PAR=3 bash rev_queue.sh main_ortho   # and scale, decomp, ablate, general
+python rev_collect.py ../data && python rev_replot.py
+python rev_diag.py ../data/ckpt/shared_U4_s1.pt --snr 10
+```
+
+Seeds: training 1, 2, 3; evaluation 123. Devices used: Apple M5 Max (MPS, torch 2.5.1)
+and an NVIDIA RTX A4500 (CUDA, torch 2.11); the ToDMA results are the ones of the
+original submission (same per-user energy and independent per-user fading).
+GPU training is not bit-reproducible, so a re-run reproduces the reported values
+within the seed spread reported in the letter (at most 0.0007 in CosSim).

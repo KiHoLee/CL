@@ -1,0 +1,19 @@
+{
+ "name": "p_shared_U4_purx",
+ "seed": 1,
+ "snr": 10.0,
+ "mask_stats": {
+  "max_abs_offdiag": 0.10887585580348969,
+  "mean_abs_offdiag": 0.08492333069443703,
+  "support_overlap_mean": 0.32056911786397296,
+  "support_overlap_max": 0.627129852771759
+ },
+ "sir_r": 1.38574,
+ "snr_r": 12.63221,
+ "attn_own": 0.47577,
+ "sir_z": 0.2948,
+ "sir_after_rx": 22.44763,
+ "cos": 0.91964,
+ "cos_random_masks_at_test": 0.15441,
+ "cos_no_attention_at_test": 0.9194
+}
