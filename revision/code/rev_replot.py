@@ -34,9 +34,9 @@ MS = 9
 STYLE = {
     "prop":   dict(label="Proposed", color="#d62728", marker="v", ls="-"),
     "agn":    dict(label="Proposed, one model for all $U$", color="#ff7f0e", marker="o", ls="-"),
-    "ods":    dict(label="Orthogonal dimension sharing", color="#1a1a1a", marker="o", ls="--"),
+    "ods":    dict(label="ODS", color="#1a1a1a", marker="o", ls="--"),
     "static": dict(label="Static orthogonal ($K$ blocks)", color="#7f7f7f", marker="s", ls="--"),
-    "fixed6": dict(label="Fixed six-way orthogonal partition", color="#bdbdbd", marker="D", ls="--"),
+    "fixed6": dict(label="Fixed six-way partition", color="#bdbdbd", marker="D", ls="--"),
     "rand":   dict(label="Random-projection mask", color="#984ea3", marker="s", ls="-."),
     "joint":  dict(label="Training without MAML", color="#8c564b", marker="x", ls=(0, (5, 2))),
     "todma":  dict(label="ToDMA $24\\times128$", color="#4393c3", marker="^", ls=":"),
@@ -140,24 +140,22 @@ def fig2():
     save(fig, ax, os.path.join(FIG, "fig2_snr_rev.pdf"), leg)
 
 
-# ---------------- Fig. 3: per-user CosSim vs U at 10 dB ----------------
+# ---------------- Fig. 3: aggregate fidelity S(U) vs U at 10 dB ----------------
 def fig3(snr=10):
-    """Per-user fidelity versus load; the aggregate per block is U times
-    the ordinate, so differences stay visible at every U."""
+    """Aggregate fidelity per block, U times the per-user CosSim; static
+    allocation saturates beyond U=K since it serves at most K users."""
     fig, ax = one_panel()
     i = SNRS.index(snr)
     Us = list(range(1, 7))
 
-    def series(key, name, perU, Umax=6):
+    def series(key, name, perU):
         m, s = [], []
         for U in Us:
-            if U > Umax:
-                m.append(np.nan); s.append(0); continue
             try:
                 mm, ss, n = curve(name.format(U=U), U if not perU else None)
             except AssertionError:
                 mm, ss = np.full(7, np.nan), np.zeros(7)
-            m.append(mm[i]); s.append(ss[i])
+            m.append(U * mm[i]); s.append(U * ss[i])
         st = STYLE[key]
         ax.errorbar(Us, m, yerr=s if any(s) else None, label=st["label"], color=st["color"],
                     marker=st["marker"], linestyle=st["ls"], linewidth=2, markersize=MS, capsize=3)
@@ -165,42 +163,33 @@ def fig3(snr=10):
     series("prop", "shared_U{U}", True)
     series("agn", "shared_agn", False)
     series("ods", "ortho_U{U}", True)
-    # static allocation: one d_b block per user, at most K=4 users
     try:
-        m4, s4, _ = curve("ortho_U4")
+        m4, _, _ = curve("ortho_U4")
         st = STYLE["static"]
-        ax.plot(Us[:4], [m4[i]] * 4, label=st["label"], color=st["color"], marker=st["marker"],
-                linestyle=st["ls"], linewidth=2, markersize=MS)
-    except AssertionError:
-        pass
-    # fixed six-way partition: the U=6 fidelity of ODS at every load
-    try:
-        m6, s6, _ = curve("ortho_U6")
-        st = STYLE["fixed6"]
-        ax.plot(Us, [m6[i]] * 6, label=st["label"], color=st["color"], marker=st["marker"],
-                linestyle=st["ls"], linewidth=2, markersize=MS)
+        ax.plot(Us, [min(U, 4) * m4[i] for U in Us], label=st["label"], color=st["color"],
+                marker=st["marker"], linestyle=st["ls"], linewidth=2, markersize=MS)
     except AssertionError:
         pass
     try:
         R = json.load(open(os.path.join(OLD, "cl_results.json")))
         RT = json.load(open(os.path.join(OLD, "cl_results_todma_u.json")))
-        tod = [(RT[f"todma_U{U}_T24_L128"][str(snr)]["cos"] if U != 4
-                else R["todma_T24_L128"][str(snr)]["cos"]) for U in Us]
+        tod = [U * (RT[f"todma_U{U}_T24_L128"][str(snr)]["cos"] if U != 4
+                    else R["todma_T24_L128"][str(snr)]["cos"]) for U in Us]
         st = STYLE["todma"]
         ax.plot(Us, tod, label=st["label"], color=st["color"], marker=st["marker"],
                 linestyle=st["ls"], linewidth=2, markersize=MS)
     except FileNotFoundError:
         pass
     ax.set_xlabel("Number of users $U$", fontsize=22)
-    ax.set_ylabel("Per-user CosSim", fontsize=22)
+    ax.set_ylabel("Aggregate fidelity $S(U)$", fontsize=22)
     ax.set_xticks(Us)
-    ax.set_ylim([0.82, 1.17])
-    ax.set_yticks(np.arange(0.84, 1.001, 0.04))
+    ax.set_ylim([0, 10.5])
+    ax.set_yticks(np.arange(0, 6.1, 1))
     ax.grid(True, alpha=0.3)
     handles, labels = ax.get_legend_handles_labels()
     rank = {STYLE[k]["label"]: j for j, k in enumerate(ORDER)}
     hl = sorted(zip(handles, labels), key=lambda x: rank.get(x[1], 99))
-    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=16.5, loc="upper right")
+    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=16.5, loc="upper left")
     save(fig, ax, os.path.join(FIG, "fig3_load_rev.pdf"), leg)
 
 
