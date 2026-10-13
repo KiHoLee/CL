@@ -1,0 +1,19 @@
+{
+ "name": "shared_U6",
+ "seed": 1,
+ "snr": 20.0,
+ "mask_stats": {
+  "max_abs_offdiag": 0.31309017539024353,
+  "mean_abs_offdiag": 0.2629533092180888,
+  "support_overlap_mean": 0.5773861090342204,
+  "support_overlap_max": 0.7141576409339905
+ },
+ "sir_r": 0.84438,
+ "snr_r": 80.76347,
+ "attn_own": 0.84677,
+ "sir_z": 0.45567,
+ "sir_after_rx": 18.71107,
+ "cos": 0.95965,
+ "cos_random_masks_at_test": 0.13484,
+ "cos_no_attention_at_test": 0.95988
+}

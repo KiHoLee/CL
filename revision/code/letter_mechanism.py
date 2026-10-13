@@ -1,0 +1,127 @@
+"""Letter-only mechanism evidence for Comments 1.5 / 2.4 (2026-10-13).
+
+Reads
+  data/effdim_spectrum_test.npy   cumulative variance of the centered,
+                                  l2-normalized held-out BERT embeddings
+  data/diag/<name>_s1_snr<snr>.json  receiver diagnostics of rev_diag.py
+                                  (SIR values are linear ratios)
+Writes
+  fig_cl/letter_mechanism.pdf     (a) variance spectrum, (b) SIR per stage
+  letter_mech_table.tex           tabular rows for the response letter
+Usage: python letter_mechanism.py
+"""
+import json, os
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA = os.path.join(ROOT, "data")
+FIG = os.path.join(ROOT, "fig_cl")
+
+# configuration -> (diag file stem, row label)
+CONFIGS = [
+    ("shared_U4", r"Proposed ($U\!=\!4$, $K\!=\!4$)"),
+    ("shared_U4_randmask", r"\quad random-projection mask"),
+    ("shared_U4_sharedrx", r"\quad shared reverse projection"),
+    ("shared_U4_K1", r"$K\!=\!1$, learned masks"),
+    ("shared_U4_K1_randmask", r"$K\!=\!1$, random-projection mask"),
+    ("shared_U6", r"$U\!=\!6$, learned masks"),
+    ("shared_U6_randmask", r"$U\!=\!6$, random-projection mask"),
+]
+
+
+def db(x):
+    return 10.0 * np.log10(x)
+
+
+def load(stem, snr):
+    p = os.path.join(DATA, "diag", f"{stem}_s1_snr{snr}.json")
+    return json.load(open(p)) if os.path.exists(p) else None
+
+
+def main():
+    cum = np.load(os.path.join(DATA, "effdim_spectrum_test.npy"))
+    n90 = int(np.searchsorted(cum, 0.90)) + 1
+    n99 = int(np.searchsorted(cum, 0.99)) + 1
+
+    plt.rcParams.update({"font.size": 10, "font.family": "DejaVu Sans"})
+    fig, (a, b) = plt.subplots(1, 2, figsize=(7.4, 3.0), gridspec_kw={"width_ratios": [1, 1.25]})
+    # (a) spectrum
+    x = np.arange(1, len(cum) + 1)
+    a.plot(x, 100 * cum, color="#1a1a1a", linewidth=1.8)
+    for n, lev, lab in [(n90, 90, f"{n90} dims"), (n99, 99, f"{n99} dims")]:
+        a.axvline(n, color="#d62728", linestyle="--", linewidth=1)
+        a.axhline(lev, color="#bbbbbb", linestyle=":", linewidth=0.8)
+        a.annotate(f"{lev}%: {lab}", xy=(n, lev), xytext=(n + 25, lev - 14), fontsize=9,
+                   arrowprops=dict(arrowstyle="-", color="#d62728", lw=0.8))
+    a.set_xlim(0, 768); a.set_ylim(0, 102)
+    a.set_xlabel("Number of leading dimensions")
+    a.set_ylabel("Cumulative variance (%)")
+    a.set_title("(a) Centered test embeddings ($d_b=768$)", fontsize=10)
+    a.grid(True, alpha=0.3)
+
+    # (b) SIR per stage at 10 dB
+    # learned-mask models only: with near one-hot attention the per-component
+    # SIR through the layer-normalized decoder is comparable across stages
+    stems = [("shared_U4", "$K\\!=\\!4$, $U\\!=\\!4$"), ("shared_U4_K1", "$K\\!=\\!1$, $U\\!=\\!4$"),
+             ("shared_U6", "$K\\!=\\!4$, $U\\!=\\!6$")]
+    rows = [(lab, load(s, 10)) for s, lab in stems]
+    rows = [(lab, d) for lab, d in rows if d is not None]
+    stages = [("sir_r", "masked candidate $\\mathbf{r}_u$"), ("sir_z", "after attention $\\mathbf{z}_u$"),
+              ("sir_after_rx", "after decoder $\\hat{\\mathbf{b}}_u$")]
+    cols = ["#9ecae1", "#4393c3", "#08306b"]
+    w = 0.26
+    xs = np.arange(len(rows))
+    for j, (key, lab) in enumerate(stages):
+        vals = [db(d[key]) for _, d in rows]
+        bars = b.bar(xs + (j - 1) * w, vals, w, label=lab, color=cols[j])
+        for bar, v in zip(bars, vals):
+            if v >= 0:
+                b.text(bar.get_x() + bar.get_width() / 2, v + 0.3, f"{v:.1f}", ha="center", va="bottom", fontsize=7.5)
+            else:
+                b.text(bar.get_x() + bar.get_width() / 2, v - 0.3, f"{v:.1f}", ha="center", va="top", fontsize=7.5)
+    b.set_xticks(xs); b.set_xticklabels([lab for lab, _ in rows], fontsize=9)
+    b.set_ylabel("SIR (dB)")
+    b.set_title("(b) SIR per receiver stage, 10 dB SNR", fontsize=10)
+    ymax = max(db(d["sir_after_rx"]) for _, d in rows)
+    ymin = min(0.0, min(db(d[k]) for _, d in rows for k, _ in stages))
+    b.set_ylim(ymin - 2.5, ymax * 1.62)
+    b.axhline(0, color="#666666", linewidth=0.8)
+    # one-row legend in the headroom above the bar labels
+    b.legend(fontsize=7.5, loc="upper center", frameon=False, ncol=3, columnspacing=1.0, handlelength=1.2, borderaxespad=0.3)
+    b.grid(True, axis="y", alpha=0.3)
+    fig.tight_layout()
+    out = os.path.join(FIG, "letter_mechanism.pdf")
+    fig.savefig(out); print("saved", out)
+
+    # table
+    lines = []
+    for stem, label in CONFIGS:
+        d = load(stem, 10)
+        if d is None:
+            print("missing", stem); continue
+        ms = d["mask_stats"]
+        lines.append(" & ".join([
+            label,
+            f"{ms['mean_abs_offdiag']:.3f}", f"{ms['support_overlap_mean']:.2f}",
+            f"{d['attn_own']:.2f}", f"{d['cos_random_masks_at_test']:.2f}",
+        ]) + r"\\")
+    tex = os.path.join(ROOT, "letter_mech_table.tex")
+    head = ("% generated by Code/letter_mechanism.py from data/diag; do not edit\n"
+            "\\begin{tabular}{lcccc}\n\\toprule\n"
+            "Configuration & Mask $|\\cos|$ & Support overlap & Attention own weight & CosSim, fresh masks\\\\\n\\midrule\n")
+    open(tex, "w").write(head + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n"); print("wrote", tex, len(lines), "rows")
+    # numbers for the prose
+    for stem, _ in CONFIGS:
+        for snr in (10, 20):
+            d = load(stem, snr)
+            if d:
+                print(f"{stem:24s} {snr} dB: |cos| {d['mask_stats']['mean_abs_offdiag']:.3f} overlap {d['mask_stats']['support_overlap_mean']:.2f} "
+                      f"SIR {db(d['sir_r']):.1f}/{db(d['sir_z']):.1f}/{db(d['sir_after_rx']):.1f} dB attn {d['attn_own']:.3f} "
+                      f"cos {d['cos']:.3f} swap {d['cos_random_masks_at_test']:.3f} noattn {d['cos_no_attention_at_test']:.3f}")
+
+
+if __name__ == "__main__":
+    main()

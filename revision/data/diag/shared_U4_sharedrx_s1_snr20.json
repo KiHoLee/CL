@@ -1,0 +1,19 @@
+{
+ "name": "shared_U4_sharedrx",
+ "seed": 1,
+ "snr": 20.0,
+ "mask_stats": {
+  "max_abs_offdiag": 0.07524710893630981,
+  "mean_abs_offdiag": 0.056148609767357506,
+  "support_overlap_mean": 0.7598442534605662,
+  "support_overlap_max": 0.8202279806137085
+ },
+ "sir_r": 0.35256,
+ "snr_r": 108.61169,
+ "attn_own": 0.28652,
+ "sir_z": 0.13733,
+ "sir_after_rx": 3.49417,
+ "cos": 0.95903,
+ "cos_random_masks_at_test": 0.32212,
+ "cos_no_attention_at_test": 0.76203
+}

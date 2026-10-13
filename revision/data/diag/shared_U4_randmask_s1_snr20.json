@@ -1,0 +1,19 @@
+{
+ "name": "shared_U4_randmask",
+ "seed": 1,
+ "snr": 20.0,
+ "mask_stats": {
+  "max_abs_offdiag": 0.036840543150901794,
+  "mean_abs_offdiag": 0.01575040988973342,
+  "support_overlap_mean": 0.33463315665721893,
+  "support_overlap_max": 0.36094337701797485
+ },
+ "sir_r": 2.34845,
+ "snr_r": 61.19333,
+ "attn_own": 0.25615,
+ "sir_z": 1.42455,
+ "sir_after_rx": 2.94109,
+ "cos": 0.9564,
+ "cos_random_masks_at_test": 0.1143,
+ "cos_no_attention_at_test": 0.7778
+}
