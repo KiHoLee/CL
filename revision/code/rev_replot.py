@@ -33,9 +33,9 @@ MS = 9
 # one style per scheme, every figure (standard 9.1)
 STYLE = {
     "prop":   dict(label="Proposed", color="#d62728", marker="v", ls="-"),
-    "agn":    dict(label="Proposed, one model for all $U$", color="#ff7f0e", marker="o", ls="-"),
+    "agn":    dict(label="Proposed, one model", color="#ff7f0e", marker="o", ls="-"),
     "ods":    dict(label="ODS", color="#1a1a1a", marker="o", ls="--"),
-    "static": dict(label="Static orthogonal ($K$ blocks)", color="#7f7f7f", marker="s", ls="--"),
+    "static": dict(label="Static orthogonal", color="#7f7f7f", marker="s", ls="--"),
     "fixed6": dict(label="Fixed six-way partition", color="#bdbdbd", marker="D", ls="--"),
     "rand":   dict(label="Random-projection mask", color="#984ea3", marker="s", ls="-."),
     "joint":  dict(label="Training without MAML", color="#8c564b", marker="x", ls=(0, (5, 2))),
@@ -66,11 +66,18 @@ def one_panel():
     return fig, fig.add_axes(AX_RECT)
 
 
-def save(fig, ax, path, legend=None):
-    """Assert label visibility and legend clearance on the rendered figure."""
+def save(fig, ax, path, legend=None, inset=None):
+    """Assert label visibility and legend/inset clearance on the rendered figure."""
     fig.canvas.draw()
     r = fig.canvas.get_renderer()
     W, H = fig.get_size_inches() * fig.dpi
+    if inset is not None:
+        ib = inset.get_tightbbox(r)
+        assert ib.x0 >= 0 and ib.y0 >= 0 and ib.x1 <= W and ib.y1 <= H, f"inset leaves canvas in {path}"
+        for line in ax.get_lines():
+            xy = ax.transData.transform(np.column_stack(line.get_data()))
+            inside = [(x, y) for x, y in xy if ib.x0 <= x <= ib.x1 and ib.y0 <= y <= ib.y1]
+            assert not inside, f"inset covers a curve point of '{line.get_label()}' in {path}"
     for lab in (ax.xaxis.label, ax.yaxis.label):
         bb = lab.get_window_extent(r)
         assert bb.x0 >= 0 and bb.y0 >= 0 and bb.x1 <= W and bb.y1 <= H, f"clipped label in {path}"
@@ -131,7 +138,10 @@ def fig2():
         pass
     ax.set_xlabel("SNR (dB)", fontsize=22)
     ax.set_ylabel("Per-user CosSim", fontsize=22)
-    ax.set_ylim([0.45, 1.0])
+    # focus on the upper range where the schemes differ; the ToDMA point at
+    # 0 dB (0.49) lies below the axis and is quoted in the caption
+    ax.set_ylim([0.70, 1.0])
+    ax.set_yticks(np.arange(0.70, 1.001, 0.05))
     ax.grid(True, alpha=0.3)
     handles, labels = ax.get_legend_handles_labels()
     rank = {STYLE[k]["label"]: i for i, k in enumerate(ORDER)}
@@ -183,13 +193,17 @@ def fig3(snr=10):
     ax.set_xlabel("Number of users $U$", fontsize=22)
     ax.set_ylabel("Aggregate fidelity $S(U)$", fontsize=22)
     ax.set_xticks(Us)
-    ax.set_ylim([0, 10.5])
-    ax.set_yticks(np.arange(0, 6.1, 1))
+    # focus on the range the curves occupy; the diagonal rise leaves the
+    # upper-left corner free for the legend (short labels, explained in the
+    # caption, keep it clear of the U = 4 points)
+    ax.set_ylim([0.5, 6.0])
+    ax.set_yticks(np.arange(1, 6.1, 1))
     ax.grid(True, alpha=0.3)
     handles, labels = ax.get_legend_handles_labels()
     rank = {STYLE[k]["label"]: j for j, k in enumerate(ORDER)}
     hl = sorted(zip(handles, labels), key=lambda x: rank.get(x[1], 99))
-    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=16.5, loc="upper left")
+    leg = ax.legend([h for h, _ in hl], [l for _, l in hl], fontsize=16.5, loc="upper left",
+                    ncol=1, handlelength=1.6, columnspacing=0.8, borderaxespad=0.3)
     save(fig, ax, os.path.join(FIG, "fig3_load_rev.pdf"), leg)
 
 
